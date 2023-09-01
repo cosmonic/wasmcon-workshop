@@ -18,6 +18,8 @@ const BUCKET string = ""
 type MyHelloCosmo struct{}
 
 func (kv *MyHelloCosmo) Handle(request hello_cosmo.WasiHttpIncomingHandlerIncomingRequest, response hello_cosmo.WasiHttpHttpTypesResponseOutparam) {
+	hello_cosmo.WasiLoggingLoggingLog(hello_cosmo.WasiLoggingLoggingLevelInfo(), "go-component", "beginning Handle")
+
 	method, pathWithQuery := methodAndPath(request)
 	if pathWithQuery.IsNone() {
 		return
