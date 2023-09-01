@@ -34,12 +34,8 @@ func contentTypeJsonHeaders() []hello_cosmo.WasiHttpHttpTypesTuple2StringListU8T
 	return []hello_cosmo.WasiHttpHttpTypesTuple2StringListU8TT{{F0: "Content-Type", F1: []byte("application/json")}}
 }
 
-func convertToWasiHeaders(headers map[string][]byte) []hello_cosmo.WasiHttpHttpTypesTuple2StringListU8TT {
-	converted := make([]hello_cosmo.WasiHttpHttpTypesTuple2StringListU8TT, len(headers))
-	for k, v := range headers {
-		converted = append(converted, hello_cosmo.WasiHttpHttpTypesTuple2StringListU8TT{F0: k, F1: v})
-	}
-	return converted
+func contentTypeMimeHeaders(mimeTime []byte) []hello_cosmo.WasiHttpHttpTypesTuple2StringListU8TT {
+	return []hello_cosmo.WasiHttpHttpTypesTuple2StringListU8TT{{F0: "Content-Type", F1: mimeTime}}
 }
 
 func methodAndPath(request hello_cosmo.WasiHttpIncomingHandlerIncomingRequest) (hello_cosmo.WasiHttpHttpTypesMethod, hello_cosmo.Option[string]) {

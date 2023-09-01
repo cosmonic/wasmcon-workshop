@@ -32,7 +32,7 @@ spec:
     - name: httpclient
       type: capability
       properties:
-        image: wasmcloud.azurecr.io/httpclient:0.7.1
+        image: cosmonic.azurecr.io/httpserver_wormhole:0.5.4
         contract: wasmcloud:httpclient
       traits:
         - type: spreadscaler

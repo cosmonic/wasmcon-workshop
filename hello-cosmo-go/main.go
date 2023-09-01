@@ -29,7 +29,6 @@ func (kv *MyHelloCosmo) Handle(request hello_cosmo.WasiHttpIncomingHandlerIncomi
 	trimmedPath := strings.Split(strings.TrimPrefix(path, "/"), "/")
 
 	switch {
-	// TODO: move to http module(?)
 	case method == hello_cosmo.WasiHttpHttpTypesMethodGet() && len(trimmedPath) >= 2 && (trimmedPath[0] == "api" && trimmedPath[1] == "counter"):
 		bucket := hello_cosmo.WasiKeyvalueTypesOpenBucket(BUCKET)
 		if bucket.IsErr() {
@@ -73,7 +72,7 @@ func (kv *MyHelloCosmo) Handle(request hello_cosmo.WasiHttpIncomingHandlerIncomi
 			ext = extSplit[len(extSplit)-1]
 		}
 
-		writeHttpResponse(response, 200, convertToWasiHeaders(map[string][]byte{"Content-Type": []byte(mime.TypeByExtension(ext))}), page)
+		writeHttpResponse(response, 200, contentTypeMimeHeaders([]byte(mime.TypeByExtension(ext))), page)
 	}
 
 }
