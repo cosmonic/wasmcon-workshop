@@ -1,5 +1,5 @@
 wit_bindgen::generate!({
-    world: "kvcounter",
+    world: "hello-cosmo",
     exports: {
         "wasi:http/incoming-handler": HelloCosmo
     }
@@ -24,7 +24,7 @@ use crate::{
 // NOTE: custom buckets are not yet supported
 const BUCKET: &str = "";
 
-/// Implementation struct for the 'kvcounter' world (see: wit/kvcounter.wit)
+/// Implementation struct for the 'hello-cosmo' world (see: wit/hello-cosmo.wit)
 struct HelloCosmo;
 
 /// Implementation of the WIT-driven incoming-handler interface for our implementation struct

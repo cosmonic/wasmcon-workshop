@@ -31,7 +31,7 @@ devcontainer open
 ```
 
 2. cosmo login
-3. cosmo build
-4. cosmo reg push ${cosmo whomai} v0.0.1
-5. edit wadm.yaml
-6. copy wadm.yaml into ui && deploy
+3. just build && just push
+4. edit wadm.yaml
+5. cosmo app put wadm.yaml
+6. cosmo app deploy hello-cosmo

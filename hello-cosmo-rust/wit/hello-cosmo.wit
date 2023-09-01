@@ -1,6 +1,6 @@
-package wasmcloud:kvcounter
+package cosmonic:hello-cosmo
 
-world kvcounter {
+world hello-cosmo {
     import wasi:keyvalue/readwrite
     import wasi:keyvalue/atomic
     import wasi:keyvalue/batch
