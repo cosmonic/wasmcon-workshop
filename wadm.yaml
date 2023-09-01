@@ -1,0 +1,58 @@
+# You can deploy this example with a simple command:
+# `cosmo app deploy wadm.yaml`
+
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: hello-cosmo
+  annotations:
+    version: v0.1.0
+    description: "Workshop Application built with Cosmonic at WasmCon 2023."
+spec:
+  components:
+    # Actor
+    - name: hello-cosmo
+      type: actor
+      properties:
+        # This is the image that will be used to run the actor
+        # image: registry.cosmonic.sh/<<constellation_id>>/<<actor_name>>:<<version>>
+      traits:
+        - type: spreadscaler
+          properties:
+            replicas: 1
+        - type: linkdef
+          properties:
+            target: redis
+        - type: linkdef
+          properties:
+            target: httpserver
+
+    # Capability Providers
+    ## HTTP Server 
+    - name: httpclient
+      type: capability
+      properties:
+        image: wasmcloud.azurecr.io/httpclient:0.7.1
+        contract: wasmcloud:httpclient
+      traits:
+        - type: spreadscaler
+          properties:
+            replicas: 1
+            spread:
+              - name: httpclientspread
+                requirements:
+                  cosmonic_managed: "true"
+    ## KeyValue Bucket
+    - name: keyvalue
+      type: capability
+      properties:
+        image: cosmonic.azurecr.io/builtin_keyvalue:0.2.4
+        contract: wasmcloud:keyvalue
+      traits:
+        - type: spreadscaler
+          properties:
+            replicas: 1
+            spread:
+              - name: keyvaluespread
+                requirements:
+                  cosmonic_managed: "true"

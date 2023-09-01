@@ -3,14 +3,16 @@ wasm_tools := env_var_or_default("WASM_TOOLS", "wasm-tools")
 wash := env_var_or_default("WASH", "wash")
 tinygo := env_var_or_default("TINYGO", "tinygo")
 wit_bindgen := env_var_or_default("WIT_BINDGEN", "wit-bindgen")
+cosmo := env_var_or_default("COSMO", "cosmo")
 
-actorid := env_var_or_default("ACTOR_ID", "")
-hostid := env_var_or_default("HOST_ID", "")
+get_constellation_id := "cosmo whoami -o json | jq -r '.user.constellation_ids[0]'"
+toml_version := `yq -oy '.version' wasmcloud.toml`
 
-expected_wasm_path := "./build/hello-cosmo-wasi.wasm"
-expected_wasm_embed_path := "./build/hello-cosmo-wasi.embed.wasm"
-expected_wasm_component_path := "./build/hello-cosmo-wasi.component.wasm"
-wasm_preview2_output_path := "./wasi_snapshot_preview1.command.wasm"
+expected_wasm_path := "./build/hello-cosmo-go.wasm"
+expected_wasm_embed_path := "./build/hello-cosmo-go.embed.wasm"
+expected_wasm_component_path := "./build/hello-cosmo-go.component.wasm"
+expected_wasm_signed_component_path := "./build/hello-cosmo-go.component_s.wasm"
+adapter_path := "./wasi_snapshot_preview1.command.wasm"
 
 _default:
   {{just}} --list
@@ -21,23 +23,17 @@ _default:
   {{wasm_tools}} --version
   {{wit_bindgen}} --version
 
-
 build:
   mkdir -p build
   go generate
   {{tinygo}} build -target=wasi -scheduler=none -o {{expected_wasm_path}} .
   {{wasm_tools}} component embed --world hello-cosmo ./wit {{expected_wasm_path}} -o {{expected_wasm_embed_path}}
-  {{wasm_tools}} component new {{expected_wasm_embed_path}} --adapt wasi_snapshot_preview1={{wasm_preview2_output_path}} -o {{expected_wasm_component_path}}
-  {{wash}} claims sign --name hello-cosmo-wasi-go {{expected_wasm_component_path}} -k -q
+  {{wasm_tools}} component new {{expected_wasm_embed_path}} --adapt wasi_snapshot_preview1={{adapter_path}} -o {{expected_wasm_component_path}}
+  {{wash}} claims sign --name hello-cosmo-go {{expected_wasm_component_path}} -k -q
 
 clean:
   rm -rf ./build
 
-signed_actor_path := absolute_path("./build/hello-cosmo-wasi.component_s.wasm")
-start_actor:
-  {{wash}} start actor file://{{signed_actor_path}} --host-id {{hostid}}
-
-restart_actor:
-  {{wash}} stop actor {{hostid}} {{actorid}}
-  {{wash}} drain lib
-  {{wash}} start actor file://{{signed_actor_path}} --host-id {{hostid}}
+# Push the signed actor to the cosmonic registry
+push version=toml_version:
+  {{cosmo}} reg push registry.cosmonic.sh/$({{get_constellation_id}})/hello-cosmo-go:{{version}} {{expected_wasm_signed_component_path}}

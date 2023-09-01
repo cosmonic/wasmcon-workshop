@@ -117,6 +117,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "hello-cosmo-rust"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "http",
+ "mime_guess",
+ "rust-embed",
+ "serde",
+ "serde_json",
+ "wit-bindgen",
+]
+
+[[package]]
 name = "http"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -470,19 +483,6 @@ dependencies = [
  "spdx",
  "wasm-encoder",
  "wasmparser",
-]
-
-[[package]]
-name = "wasmcon2023-keyvalue"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "http",
- "mime_guess",
- "rust-embed",
- "serde",
- "serde_json",
- "wit-bindgen",
 ]
 
 [[package]]

@@ -1,11 +1,8 @@
 [package]
-name = "wasmcon2023-keyvalue"
+name = "hello-cosmo-rust"
 version = "0.1.0"
 edition = "2021"
 authors = ["wasmcloud Team"]
-description = """
-Wasmcon2023 WASI Keyvalue demo
-"""
 
 [lib]
 crate-type = ["cdylib"]

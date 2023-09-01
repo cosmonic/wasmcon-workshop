@@ -1,5 +1,5 @@
-name = "hello-cosmo-rust"
-language = "rust"
+name = "hello-cosmo-go"
+language = "tinygo"
 type = "actor"
 version = "0.1.0"
 

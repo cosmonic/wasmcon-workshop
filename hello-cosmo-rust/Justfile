@@ -2,9 +2,11 @@ just := env_var_or_default("JUST", just_executable())
 cargo := env_var_or_default("CARGO", "cargo")
 wasm_tools := env_var_or_default("WASM_TOOLS", "wasm-tools")
 wash := env_var_or_default("WASH", "wash")
+cosmo := env_var_or_default("COSMO", "cosmo")
 
-expected_wasm_path := "target/wasm32-wasi/release/wasmcon2023_keyvalue.wasm"
-wasm_preview2_output_path := "target/wasm32-wasi/release/wasmcon2023_keyvalue.preview2.wasm"
+toml_version := `yq -oy '.version' wasmcloud.toml`
+get_constellation_id := "cosmo whoami -o json | jq -r '.user.constellation_ids[0]'"
+expected_wasm_signed_component_path := "build/hello_cosmo_rust_s.wasm"
 
 _default:
     {{just}} --list
@@ -27,24 +29,6 @@ build:
 build-watch:
     {{cargo}} watch --ignore=target -- {{just}} build
 
-##############
-# Operations #
-##############
-
-# NOTE: don't forget to set up WASMCLOUD_CLUSTER_SEED and WASMCLOUD_CLUSTER_ISSUERS
-# as necessary when starting the 🦀 rust host!
-
-expected_signed_wasm_path := absolute_path("build/wasmcon2023_keyvalue_s.wasm")
-
-# Run the actor on a given host
-run-actor host_id:
-    @echo "[warn] make sure to set WASMCLOUD_CLUSTER_SEED and WASMCLOUD_CLUSTER_ISSUERS appropriately for new hosts"
-    @echo "(see output of wash up for expected values of cluster seed & issuers)"
-    @{{wash}} start actor file://{{expected_signed_wasm_path}} --host-id {{host_id}}
-
-# Set up links to a given in-lattice actor_id
-setup-links actor_id:
-    # Setting up links for HTTP provider (VAG3QITQQ2ODAOWB5TTQSDJ53XK3SHBEIFNK4AYJ5RKAX2UNSCAPHA5M)
-    @{{wash}} link put {{actor_id}} VAG3QITQQ2ODAOWB5TTQSDJ53XK3SHBEIFNK4AYJ5RKAX2UNSCAPHA5M wasmcloud:httpserver
-    # Setting up links for kvredis provider (VAG3QITQQ2ODAOWB5TTQSDJ53XK3SHBEIFNK4AYJ5RKAX2UNSCAPHA5M)
-    @{{wash}} link put {{actor_id}} VAZVC4RX54J2NVCMCW7BPCAHGGG5XZXDBXFUMDUXGESTMQEJLC3YVZWB wasmcloud:keyvalue
+# Push the signed actor to the cosmonic registry
+push version=toml_version:
+    {{cosmo}} reg push registry.cosmonic.sh/$({{get_constellation_id}})/hello-cosmo-rust:{{version}} {{expected_wasm_signed_component_path}}
