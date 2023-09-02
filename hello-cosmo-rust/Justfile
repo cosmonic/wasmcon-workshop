@@ -31,4 +31,5 @@ build-watch:
 
 # Push the signed actor to the cosmonic registry
 push version=toml_version:
+    ../put-creds.sh
     {{cosmo}} reg push registry.cosmonic.sh/$({{get_constellation_id}})/hello-cosmo-rust:{{version}} {{expected_wasm_signed_component_path}}
