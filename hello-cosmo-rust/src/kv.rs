@@ -8,6 +8,7 @@ use crate::wasi::{
             incoming_value_consume_sync, new_outgoing_value, outgoing_value_write_body,
         },
     },
+    logging::logging::{log, Level},
 };
 
 /// Increment (possibly negatively) the counter for a given key
@@ -31,6 +32,8 @@ pub fn increment_counter(bucket: u32, key: &String, amount: i32) -> anyhow::Resu
             0
         }
     };
+
+    log(Level::Info, "rust-component", format!("current value: {current_value}").as_str());
 
     // Calculate the new value
     let new_value: i32 = current_value + amount;

@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"encoding/json"
+	"fmt"
 	"mime"
 	"strings"
 
@@ -32,6 +33,8 @@ func (kv *MyHelloCosmo) Handle(request hello_cosmo.WasiHttpIncomingHandlerIncomi
 
 	switch {
 	case method == hello_cosmo.WasiHttpHttpTypesMethodGet() && len(trimmedPath) >= 2 && (trimmedPath[0] == "api" && trimmedPath[1] == "counter"):
+		hello_cosmo.WasiLoggingLoggingLog(hello_cosmo.WasiLoggingLoggingLevelInfo(), "go-component", "incrementing counter")
+
 		bucket := hello_cosmo.WasiKeyvalueTypesOpenBucket(BUCKET)
 		if bucket.IsErr() {
 			return
@@ -43,6 +46,8 @@ func (kv *MyHelloCosmo) Handle(request hello_cosmo.WasiHttpIncomingHandlerIncomi
 		} else {
 			newNum = IncrementCounter(bucket.Unwrap(), "default", 1)
 		}
+
+		hello_cosmo.WasiLoggingLoggingLog(hello_cosmo.WasiLoggingLoggingLevelInfo(), "go-component", fmt.Sprintf("new value: %d", newNum))
 
 		resp := struct {
 			Counter uint32 `json:"counter"`
