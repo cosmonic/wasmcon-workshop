@@ -4,6 +4,7 @@ world hello-cosmo {
     import wasi:keyvalue/readwrite
     import wasi:keyvalue/atomic
     import wasi:keyvalue/batch
+    import wasi:logging/logging
 
     export wasi:http/incoming-handler
 }

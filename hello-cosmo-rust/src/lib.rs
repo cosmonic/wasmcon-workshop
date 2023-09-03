@@ -8,6 +8,7 @@ wit_bindgen::generate!({
 use wasi::{
     http::http_types::{Method, ResponseOutparam},
     keyvalue::types::open_bucket,
+    logging::logging::{log, Level},
 };
 
 mod http_helper;
@@ -30,6 +31,8 @@ struct HelloCosmo;
 /// Implementation of the WIT-driven incoming-handler interface for our implementation struct
 impl Guest for HelloCosmo {
     fn handle(request: IncomingRequest, response: ResponseOutparam) {
+        log(Level::Info, "rust-component", "beginning handle");
+
         let (method, request_path) = method_and_path(request);
         let trimmed_path: Vec<&str> = request_path.path().trim_matches('/').split('/').collect();
 
@@ -39,6 +42,8 @@ impl Guest for HelloCosmo {
             //
             // Retrieve value of the counter
             (Method::Get, ["api", "counter"]) => {
+                log(Level::Info, "rust-component", "incrementing counter");
+
                 // Retrieve the bucket
                 // Retrieve bucket or return early with error
                 let bucket = if let Ok(v) = open_bucket(BUCKET) {
@@ -69,7 +74,7 @@ impl Guest for HelloCosmo {
                 };
 
                 // Build & write the response the response
-                eprintln!("[success] successfully incremented default counter");
+                log(Level::Info, "rust-component", format!("new value: {updated_value}").as_str());
                 write_http_response(
                     response,
                     200,

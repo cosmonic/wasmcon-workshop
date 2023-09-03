@@ -29,11 +29,12 @@ build:
   {{tinygo}} build -target=wasi -scheduler=none -o {{expected_wasm_path}} .
   {{wasm_tools}} component embed --world hello-cosmo ./wit {{expected_wasm_path}} -o {{expected_wasm_embed_path}}
   {{wasm_tools}} component new {{expected_wasm_embed_path}} --adapt wasi_snapshot_preview1={{adapter_path}} -o {{expected_wasm_component_path}}
-  {{wash}} claims sign --name hello-cosmo-go {{expected_wasm_component_path}} -k -q
+  {{wash}} claims sign --name hello-cosmo-go {{expected_wasm_component_path}} -k -q -l
 
 clean:
   rm -rf ./build
 
 # Push the signed actor to the cosmonic registry
 push version=toml_version:
+  ../put-creds.sh
   {{cosmo}} reg push registry.cosmonic.sh/$({{get_constellation_id}})/hello-cosmo-go:{{version}} {{expected_wasm_signed_component_path}}

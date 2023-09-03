@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 
 	hello_cosmo "hello_cosmo/gen"
@@ -23,6 +24,8 @@ func IncrementCounter(bucket uint32, key string, amount int32) uint32 {
 		}
 		currentValue = uint32(bNum)
 	}
+
+	hello_cosmo.WasiLoggingLoggingLog(hello_cosmo.WasiLoggingLoggingLevelInfo(), "go-component", fmt.Sprintf("current value: %d", currentValue))
 
 	newValue := currentValue + uint32(amount)
 	outgoingValue := hello_cosmo.WasiKeyvalueTypesNewOutgoingValue()
