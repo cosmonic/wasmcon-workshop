@@ -7,6 +7,8 @@ cosmo := env_var_or_default("COSMO", "cosmo")
 toml_version := `yq -oy '.version' wasmcloud.toml`
 get_constellation_id := "cosmo whoami -o json | jq -r '.user.constellation_ids[0]'"
 expected_wasm_signed_component_path := "build/hello_cosmo_rust_s.wasm"
+registry_url := "registry.cosmonic.sh"
+artifact := "hello-cosmo-rust:" + toml_version
 
 _default:
     {{just}} --list
@@ -29,7 +31,21 @@ build:
 build-watch:
     {{cargo}} watch --ignore=target -- {{just}} build
 
+# Deploy the wadm manifest
+deploy: create-manifest
+    @cosmo app deploy ./wadm.yaml
+
 # Push the signed actor to the cosmonic registry
 push version=toml_version:
     ../put-creds.sh
-    {{cosmo}} reg push registry.cosmonic.sh/$({{get_constellation_id}})/hello-cosmo-rust:{{version}} {{expected_wasm_signed_component_path}}
+    {{cosmo}} reg push {{registry_url}}/$({{get_constellation_id}})/{{artifact}} {{expected_wasm_signed_component_path}}
+
+# Check your component wit
+check-component:
+    {{wasm_tools}} component wit {{expected_wasm_signed_component_path}}
+
+# Create a declarative application manifest for your component
+create-manifest:
+    @artifact_url={{registry_url}}/$({{get_constellation_id}})/{{artifact}} && \
+    sed -e "s|v0\.1\.0|v0.1.0-rust|g" -e "s|registry\.cosmonic\.sh/<<constellation_id>>/<<actor_name>>:<<version>>|$artifact_url|g" ../wadm.yaml > wadm.yaml
+    @echo "Created manifest at ./wadm.yaml!"
