@@ -15,7 +15,7 @@ spec:
       type: actor
       properties:
         # This is the image that will be used to run the actor
-        # image: registry.cosmonic.sh/<<constellation_id>>/<<actor_name>>:<<version>>
+        image: registry.cosmonic.sh/<<constellation_id>>/<<actor_name>>:<<version>>
       traits:
         - type: spreadscaler
           properties:
