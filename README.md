@@ -20,7 +20,7 @@ Working in this repository is best done using the packaged [devcontainer](./.dev
 
 1. [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 1. [Docker](https://docs.docker.com/engine/install/)
-1. [VSCode](https://code.visualstudio.com/download) and the [devcontainer CLI](https://code.visualstudio.com/docs/devcontainers/devcontainer-cli#_installation)
+1. [VSCode](https://code.visualstudio.com/download) and the [devcontainer extension]([https://code.visualstudio.com/docs/devcontainers/devcontainer-cli#_installation](https://code.visualstudio.com/docs/devcontainers/containers#_installation))
 
 To work locally, after installing the prerequisites, clone this repository and open the devcontainer at the root.
 
