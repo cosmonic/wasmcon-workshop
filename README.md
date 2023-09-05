@@ -22,7 +22,7 @@ Working in this repository is best done using the packaged [devcontainer](./.dev
 1. [Docker](https://docs.docker.com/engine/install/)
 1. [VSCode](https://code.visualstudio.com/download) and the [devcontainer extension]([https://code.visualstudio.com/docs/devcontainers/devcontainer-cli#_installation](https://code.visualstudio.com/docs/devcontainers/containers#_installation))
 
-To work locally, after installing the prerequisites, clone this repository and open the devcontainer at the root.
+To work locally, after installing the prerequisites, clone this repository and open the devcontainer at the root. You'll need to ensure Docker is running, and you've installed the devcontainer CLI from VSCode.
 
 ```bash
 git clone https://github.com/cosmonic/wasmcon-workshop.git
