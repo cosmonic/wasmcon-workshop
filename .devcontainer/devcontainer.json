@@ -1,6 +1,6 @@
 {
 	"name": "wasmcon-workshop",
-	"image": "ghcr.io/cosmonic/wasmcon-workshop:latest",
+	"image": "ghcr.io/cosmonic/wasmcon-workshop:pr7",
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {}
 	},
