@@ -1,7 +1,9 @@
 {
 	"name": "wasmcon-workshop",
 	"image": "ghcr.io/cosmonic/wasmcon-workshop:latest",
-	"features": {},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {}
+	},
 	"containerEnv": {
 		"RUST_LOG": "INFO"
 	},
