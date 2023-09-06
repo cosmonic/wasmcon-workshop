@@ -1,11 +1,16 @@
 package main
 
 import (
+	"embed"
 	"fmt"
+	"mime"
 	"strings"
 
 	hello_cosmo "hello_cosmo/gen"
 )
+
+//go:embed ui
+var embeddedUI embed.FS
 
 type MyHelloCosmo struct{}
 
@@ -36,8 +41,6 @@ func (kv *MyHelloCosmo) Handle(request hello_cosmo.WasiHttpIncomingHandlerIncomi
 	hello_cosmo.WasiLoggingLoggingLog(hello_cosmo.WasiLoggingLoggingLevelInfo(), "go-component", path)
 
 	switch {
-	case method == hello_cosmo.WasiHttpHttpTypesMethodGet() && path == "/":
-		writeHttpResponse(response, 200, contentTypeJsonHeaders(), []byte(`{"hello": "cosmo"}`))
 	case method == hello_cosmo.WasiHttpHttpTypesMethodGet() && path == "/api/counter":
 		newValue, err := increment("default")
 		if err != nil {
@@ -54,7 +57,24 @@ func (kv *MyHelloCosmo) Handle(request hello_cosmo.WasiHttpIncomingHandlerIncomi
 			writeHttpResponse(response, 200, contentTypeJsonHeaders(), []byte(fmt.Sprintf(`{"counter": %d}`, newValue)))
 		}
 	default:
-		writeHttpResponse(response, 404, contentTypeJsonHeaders(), []byte(`{"error": "not found"}`))
+		if path == "/" {
+			path = "ui/index.html"
+		} else {
+			path = "ui" + path
+		}
+
+		page, err := embeddedUI.ReadFile(path)
+		if err != nil {
+			writeHttpResponse(response, 404, contentTypeJsonHeaders(), []byte("{\"error\":\""+path+": not found\"}"))
+		}
+
+		ext := ""
+		extSplit := strings.Split(path, ".")
+		if len(extSplit) > 1 {
+			ext = extSplit[len(extSplit)-1]
+		}
+
+		writeHttpResponse(response, 200, contentTypeMimeHeaders([]byte(mime.TypeByExtension(ext))), page)
 	}
 }
 
