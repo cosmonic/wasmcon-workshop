@@ -20,18 +20,19 @@ Working in this repository is best done using the packaged [devcontainer](./.dev
 
 1. [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 1. [Docker](https://docs.docker.com/engine/install/)
-1. [VSCode](https://code.visualstudio.com/download) and the [devcontainer extension]([https://code.visualstudio.com/docs/devcontainers/devcontainer-cli#_installation](https://code.visualstudio.com/docs/devcontainers/containers#_installation))
+1. [VSCode](https://code.visualstudio.com/download) and the [Dev Containers Extension](vscode:extension/ms-vscode-remote.remote-containers)
 
-To work locally, after installing the prerequisites, clone this repository and open the devcontainer at the root. You'll need to ensure Docker is running, and you've installed the devcontainer CLI from VSCode.
+To work locally, after installing the prerequisites, clone this repository and open the devcontainer at the root. You'll need to ensure Docker is running, and you've installed the DevContainers Extension from VSCode.
 
 ```bash
 git clone https://github.com/cosmonic/wasmcon-workshop.git
 cd wasmcon-workshop
-devcontainer open
 ```
 
-2. cosmo login
-3. just build && just push
+1. From the VSCode Command Palette, open the current directory in Dev Containers. Continue the following steps inside the container.
+
+2. `cosmo login` and `cosmo up`.
+3. cd into the go or the rust example and run `just build && just push`.
 4. edit wadm.yaml
-5. cosmo app put wadm.yaml
-6. cosmo app deploy hello-cosmo
+5. `cosmo app put wadm.yaml`
+6. `cosmo app deploy hello-cosmo`
