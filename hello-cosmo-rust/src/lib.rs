@@ -14,7 +14,9 @@ use wasi::{
 
 mod http_helper;
 mod kv;
+mod ui;
 use http_helper::*;
+use ui::get_static_asset;
 
 use crate::exports::wasi::http::incoming_handler::{Guest, IncomingRequest};
 
@@ -59,9 +61,6 @@ impl Guest for HelloCosmo {
         let trimmed_path: Vec<&str> = request_path.path().trim_matches('/').split('/').collect();
         // Generate an outgoing request
         match (method, trimmed_path.as_slice()) {
-            (Method::Get, [""]) => {
-                write_http_response(response, 200, &content_type_json(), "{\"hello\":\"cosmo\"}")
-            },
             (Method::Get, ["api", "counter"]) => {
                 match increment("default".to_string()) {
                     Ok(value) => write_http_response(
@@ -100,6 +99,21 @@ impl Guest for HelloCosmo {
                     }
                 };
             },
+            (Method::Get, asset_path) => {
+                let path = asset_path.join("/");
+                match get_static_asset(&path) {
+                    Ok((content_type, bytes)) => write_http_response(
+                        response,
+                        200,
+                        &[("Content-Type".into(), content_type.into_bytes())],
+                        bytes,
+                    ),
+                    Err(err) => {
+                        eprintln!("[error] failed to retreive static asset @ [{path}]: {err:?}");
+                        write_http_response(response, 404, &Vec::new(), "not found");
+                    }
+                };
+            }
             _ => {
                 write_http_response(response, 404, &content_type_json(), "not found")
             }
