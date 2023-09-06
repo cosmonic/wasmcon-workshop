@@ -1,17 +1,42 @@
-# Use rust as the base image
-FROM rust:1-slim-bullseye as builder
+#
+# STEP 1: Install wasm tools
+#
+FROM rust:1-slim-bullseye as rust-builder
+
+# Set environment variables to avoid prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update and install necessary build dependencies
+RUN apt-get update && apt-get install -y curl ca-certificates curl wget build-essential pkg-config sudo jq
+RUN curl -s https://packagecloud.io/install/repositories/wasmcloud/core/script.deb.sh | bash
+RUN apt install wash
+
+# Install wasm tools
+RUN cargo install --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli && \
+    cargo install wasm-tools --version 1.0.40 && \
+    cargo install wit-deps-cli just
+
+# Install cosmo from latest
+RUN bash -c "$(curl -fsSL https://cosmonic.sh/install.sh)"
+
+#
+# STEP 2: Build user devcontainer
+#
+FROM rust:1-slim-bullseye as workshop-container
+COPY --from=rust-builder /usr/local/cargo/bin/ /usr/local/cargo/bin/
+COPY --from=rust-builder /usr/local/bin/ /usr/local/bin/
+COPY --from=rust-builder /root/.cosmo/bin /root/.cosmo/bin
 
 # Set environment variables to avoid prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Update and install necessary dependencies
-RUN apt-get update && apt-get install -y curl ca-certificates curl wget build-essential pkg-config libssl-dev sudo jq
+RUN apt-get update && apt-get install -y curl ca-certificates curl wget build-essential pkg-config sudo jq
 
-# Install Rust targets
 RUN rustup target add wasm32-unknown-unknown && \
     rustup target add wasm32-wasi
 
-ENV PATH="/usr/local/go/bin:${PATH}"
+ENV PATH="/root/.cosmo/bin:/usr/local/go/bin:${PATH}"
 
 # Install Tinygo 0.29.0
 RUN arch=$(uname -m) && \
@@ -37,21 +62,6 @@ RUN arch=$(uname -m) && \
     # Install NATS CLI
     go install github.com/nats-io/natscli/nats@latest
 
-# Install wash from main
-RUN cargo install --git https://github.com/wasmcloud/wash --branch main --force
-
-# Install cosmo from latest
-RUN bash -c "$(curl -fsSL https://cosmonic.sh/install.sh)"
-ENV PATH="/root/.cosmo/bin:${PATH}"
-
-# Install wasm tools
-RUN cargo install --git https://github.com/bytecodealliance/wit-bindgen wit-bindgen-cli && \
-    cargo install wasm-tools --version 1.0.40 && \
-    cargo install wit-deps-cli just
-
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Copy in workshop files
-COPY ./ ./
 
 CMD ["/bin/bash"]
