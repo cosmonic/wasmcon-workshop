@@ -1,5 +1,17 @@
 keyvalue = "https://github.com/WebAssembly/wasi-keyvalue/archive/main.tar.gz"
 logging = "https://github.com/WebAssembly/wasi-logging/archive/main.tar.gz"
 http = "https://github.com/wasmCloud/wasi-http/archive/main.tar.gz" # TODO: Switch to upstream once Wasm tooling compatible
-poll = "https://github.com/WebAssembly/wasi-poll/archive/main.tar.gz" # TODO: Remove once keyvalue is compatible
+
+# Poll has been subsumed under wasi-io
+# (see: https://github.com/WebAssembly/wasi-poll/commit/09780858842d9eaba973750b80b1a0dc649298c3)
+#
+# However we actually *want* to use the pre-resources version of streams
+# so we should refer to the now-archived wasi-poll repo
+poll = "https://github.com/WebAssembly/wasi-poll/archive/main.tar.gz"
+
+# Pin to pre-resources version of wasi:io/streams
+#
+# This is necessary because functions like read under wasi:io/streams
+# are no longer available as top level functions, they're under
+# resources (ex. `input-stream`) instead
 io = "./overrides/io" # Pin to newer version of streams contract
