@@ -4,9 +4,10 @@ wash := env_var_or_default("WASH", "wash")
 tinygo := env_var_or_default("TINYGO", "tinygo")
 wit_bindgen := env_var_or_default("WIT_BINDGEN", "wit-bindgen")
 cosmo := env_var_or_default("COSMO", "cosmo")
+go := env_var_or_default("GO_BIN", "go")
 
 get_constellation_id := "cosmo whoami -o json | jq -r '.user.constellation_ids[0]'"
-toml_version := "0.1." # `yq -oy '.version' wasmcloud.toml`
+toml_version := `yq -oy '.version' wasmcloud.toml`
 registry_url := "registry.cosmonic.sh"
 artifact := "hello-cosmo-go:" + toml_version
 
@@ -27,18 +28,18 @@ _default:
   {{wasm_tools}} --version
   {{wit_bindgen}} --version
 
-# Build with wash rather than manual tooling
-build-wash:
-  mkdir -p build
-  go generate
+# Create directories necessary for building
+build-dir:
+    mkdir -p build
+
+# Build with wash tooling
+build: build-dir
+  {{go}} generate
   {{wash}} build
-  {{wasm_tools}} component new {{expected_wasm_signed_path}} --adapt wasi_snapshot_preview1={{adapter_path}} -o {{expected_wasm_component_path}}
-  {{wash}} claims sign --name hello-cosmo-go {{expected_wasm_component_path}} -k -q -l
 
 # Build with manual tooling
-build:
-  mkdir -p build
-  go generate
+build-manual: build-dir
+  {{go}} generate
   {{tinygo}} build -target=wasi -scheduler=none -o {{expected_wasm_path}} .
   {{wasm_tools}} component embed --world hello-cosmo ./wit {{expected_wasm_path}} -o {{expected_wasm_embed_path}}
   {{wasm_tools}} component new {{expected_wasm_embed_path}} --adapt wasi_snapshot_preview1={{adapter_path}} -o {{expected_wasm_component_path}}
